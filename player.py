@@ -1,7 +1,11 @@
 import asyncio
 from playwright.async_api import async_playwright
 import q
+from dotenv import load_dotenv
+import os
+from pathlib import Path
 
+load_dotenv()
 playwright = None
 browser = None
 page = None
@@ -14,8 +18,8 @@ async def setup():
     playwright = await async_playwright().start()
 
     browser = await playwright.chromium.launch_persistent_context(
-        user_data_dir="./brave_bot_profile",
-        executable_path=r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
+        user_data_dir=os.getenv("BROWSER_USER_DATA_DIR"),
+        executable_path=Path(os.getenv("BROWSER_EXECUTABLE_PATH")),
         headless=False
     )
 
