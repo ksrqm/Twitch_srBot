@@ -133,7 +133,6 @@ BROWSER_EXECUTABLE_PATH=C:/Program Files/BraveSoftware/Brave-Browser/Application
 * Do not upload `.env` to GitHub.
 * Do not upload browser profiles.
 * Do not use quotes around `.env` values.
-* Use `/` instead of `\` in Windows paths.
 
 ---
 
