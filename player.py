@@ -14,9 +14,11 @@ async def setup():
     playwright = await async_playwright().start()
 
     browser = await playwright.chromium.launch_persistent_context(
-        user_data_dir="./chrome_bot_profile",
+        user_data_dir="./brave_bot_profile",
+        executable_path=r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe",
         headless=False
     )
+
     page = await browser.new_page()
     await page.goto("https://www.youtube.com")
 

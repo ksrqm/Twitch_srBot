@@ -2,4 +2,4 @@
 .venv/
 .idea/
 __pycache__/
-chrome_bot_profile
+brave_bot_profile/
