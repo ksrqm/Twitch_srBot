@@ -1,15 +1,15 @@
-import link_check
 import os
-import q
-import player
 import asyncio
+
+from SR import link_check, que, player, playlist_randomizer
+
 from dotenv import load_dotenv
 from twitchio.ext import commands
 
-load_dotenv()
 
+load_dotenv()
 bot = commands.Bot(
-    token=os.getenv("TWITCH_TOKEN"),
+    token=str(os.getenv("TWITCH_TOKEN")),
     prefix="!",
     initial_channels=[os.getenv("TWITCH_CHANNEL")]
 )
@@ -17,28 +17,56 @@ bot = commands.Bot(
 @bot.event()
 async def event_ready():
     print(f"Bot is working. Reading chat in: {os.getenv('TWITCH_CHANNEL')}")
-    await player.setup()
+    playlist_randomizer.setup_local_playlist()
     asyncio.create_task(player.player_loop())
 
+############################################################################
+################################SONG REQUEST################################
+############################################################################
 @bot.command()
 async def song(ctx):
-    player.ctx = ctx
-    song = await link_check.handle_song(ctx)
-    if song:
-        await q.filter_add_song(song, ctx)
-
-@bot.command()
-async def skip(ctx):
-    player.skip()
+    request = await link_check.handle_song(ctx)
+    if request:
+        que.add_to_queue(request)
+        await ctx.send(
+            f"Added to queue: {request['title']} | "
+            f"requested by {request['user']} | "
+            f"{request['link']}"
+        )
 
 @bot.command()
 async def queue(ctx):
-    songs = q.get_queue()
+    songs = que.get_queue()
     if len(songs) == 0:
         await ctx.send("Queue is empty")
         return
     text = " | ".join(song["title"] for song in songs[:3])
     await ctx.send(f"Queue: {text}")
 
+@bot.command()
+async def volume(ctx):
+    if ctx.author.name == os.getenv('TWITCH_CHANNEL'):
+        args = ctx.message.content.split()
+
+        if len(args) < 2:
+            await ctx.send("Usage: !volume <0-100>")
+            return
+
+        vol_arg = int(args[1])
+        player.player.set_volume(vol_arg)
+        await ctx.send(f"Volume set to {vol_arg}%")
+
+@bot.command()
+async def skip(ctx):
+    if ctx.author.name == os.getenv('TWITCH_CHANNEL'):
+        player.player.stop()
+
+@bot.command()
+async def current(ctx):
+    await ctx.send(f"Currently playing: {player.player.current_song}")
+
+############################################################################
+############################################################################
+############################################################################
 if __name__ == "__main__":
     bot.run()
