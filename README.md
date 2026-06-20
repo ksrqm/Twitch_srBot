@@ -20,7 +20,8 @@ https://www.videolan.org/
 Open Command Prompt in the project directory and run:
 
 `python -m venv .venv && .venv\Scripts\activate && pip install -r requirements.txt`
-4. Configure the bot
+
+4.Configure the bot
 
 Rename .env.example to .env and fill in the required values.
 
