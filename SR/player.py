@@ -35,14 +35,21 @@ class Player:
 
 player = Player()
 
+def pause():
+    player.vlc_player.pause()
 
 async def play(song):
     audio_url = get_audio_url(song["link"])
     player.play_media(audio_url)
     player.current_song = song["link"]
     await asyncio.sleep(3)
-    while player.is_playing():
+    while True:
         if player.skip:
+            break
+        state = player.vlc_player.get_state()
+        if state == vlc.State.Ended:
+            break
+        if state == vlc.State.Error:
             break
         await asyncio.sleep(1)
 
@@ -56,8 +63,13 @@ async def play_local(path):
     print(f"Playing local: {path}")
     player.play_media(path)
     await asyncio.sleep(1)
-    while player.is_playing():
+    while True:
         if player.skip:
+            break
+        state = player.vlc_player.get_state()
+        if state == vlc.State.Ended:
+            break
+        if state == vlc.State.Error:
             break
         await asyncio.sleep(1)
 

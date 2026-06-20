@@ -47,6 +47,7 @@ bot checks only for TRUE so if you put "Mona Lisa" for example it'll still work
 * `!volume <0-100>` - set volume
 * `!queue` - show queue
 * `!current` - show currently playing song
+* `!pause` - pause currently playing song
 
 ```
 ```
