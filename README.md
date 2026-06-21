@@ -42,6 +42,7 @@ bot checks only for TRUE so if you put "Mona Lisa" for example it'll still work
 * `OSU_STATE=TRUE`
 * `PLAYLIST_PATH_OSU=...`
 * `PLAYLIST_PATH=...`
+* `USERS_WITH_PERMS=...`
 
 ## Commands
 * `!song <youtube_id>` - add song request
@@ -50,9 +51,6 @@ bot checks only for TRUE so if you put "Mona Lisa" for example it'll still work
 * `!queue` - show queue
 * `!current` - show currently playing song
 * `!pause` - pause currently playing song
-
-```
-```
 
 # Note
 in case of problems or questions you can reach me on discord

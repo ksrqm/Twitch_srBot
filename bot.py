@@ -11,8 +11,9 @@ load_dotenv()
 bot = commands.Bot(
     token=str(os.getenv("TWITCH_TOKEN")),
     prefix="!",
-    initial_channels=[os.getenv("TWITCH_CHANNEL")]
+    initial_channels=[os.getenv("TWITCH_CHANNEL")],
 )
+users_with_perms = str(os.getenv("USERS_WITH_PERMS")).split(',')
 
 @bot.event()
 async def event_ready():
@@ -41,8 +42,12 @@ async def queue(ctx):
     if len(songs) == 0:
         await ctx.send("Queue is empty")
         return
-    text = " | ".join(song["title"] for song in songs[:3]) + f" | and {len(songs)-3} more"
-    await ctx.send(f"Queue: {text}")
+    elif len(songs) > 3:
+        text = " | ".join(song["title"] for song in songs[:3]) + f" | and {len(songs)-3} more"
+        await ctx.send(f"Queue: {text}")
+    else:
+        text = " | ".join(song["title"] for song in songs[:3])
+        await ctx.send(f"Queue: {text}")
 
 @bot.command()
 async def volume(ctx):
@@ -60,8 +65,8 @@ async def volume(ctx):
         await ctx.send("Nice try rascal")
 
 @bot.command()
-async def skip(ctx):
-    if ctx.author.name.lower() == os.getenv('TWITCH_CHANNEL'):
+async def pause(ctx):
+    if ctx.author.name.lower() in users_with_perms:
         player.player.stop()
     else:
         await ctx.send("Nice try rascal")
@@ -72,7 +77,7 @@ async def current(ctx):
 
 @bot.command()
 async def pause(ctx):
-    if ctx.author.name.lower() == os.getenv('TWITCH_CHANNEL'):
+    if ctx.author.name.lower() in users_with_perms:
         player.pause()
     else:
         await ctx.send("Nice try rascal")
