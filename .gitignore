@@ -4,3 +4,4 @@
 __pycache__/
 brave_bot_profile/
 log.txt
+*.spec

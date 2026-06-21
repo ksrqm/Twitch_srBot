@@ -2,32 +2,27 @@
 
 ## Requirements
 
-* Windows
+### Running the executable
 * VLC Media Player installed
-* Python
 
-## Quick Install
-1. Install Python
- 
-https://www.python.org/
+### Running from source
+* VLC Media Player installed
+* Python 3.10+
 
-2. Install VLC Media Player
+# Quick Install
+
+1. Install VLC Media Player
 
 https://www.videolan.org/
 
-3. Install the bot
+2. Download the latest release
 
-Open Command Prompt in the project directory and run:
+3. Configure the bot
 
-`python -m venv .venv && .venv\Scripts\activate && pip install -r requirements.txt`
+Rename `.env.example` to `.env` and fill in the required values (instructions in the file and below)
 
-4. Configure the bot
+4. Run the .exe file
 
-Rename .env.example to .env and fill in the required values.
-
-5. Run the bot
-
-Start the bot using: start.bat
 ## Configuration
 
 Rename `.env.example` to `.env` and fill in:
@@ -37,7 +32,7 @@ Rename `.env.example` to `.env` and fill in:
 
 and settings:
 
-bot checks only for TRUE so if you put "Mona Lisa" for example it'll still work
+bot checks only for "TRUE" value so if you put "Mona Lisa" for example it'll still work
 * `AUTO_PLAYLIST=TRUE`
 * `OSU_STATE=TRUE`
 * `PLAYLIST_PATH_OSU=...`
