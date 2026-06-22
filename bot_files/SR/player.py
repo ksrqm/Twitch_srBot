@@ -11,7 +11,7 @@ from SR import que
 class Player:
     def __init__(self):
         self.vlc_player = vlc.MediaPlayer()
-        self.vlc_player.audio_set_volume(30)
+        self.vlc_player.audio_set_volume(20)
         self.skip = False
         self.current_song = None
 

@@ -1,13 +1,16 @@
 import yt_dlp
 from urllib.parse import urlparse, parse_qs
 
+supported_hostnames = {
+        "www.youtube.com",
+        "youtube.com",
+        "youtu.be",
+        "music.youtube.com"
+    }
+
 async def handle_song(ctx):
     args = ctx.message.content.split(" ")
-
-    if len(args) < 2:
-        await ctx.send("You need to provide YouTube link")
-        return False
-
+    #validate_link(args[1], args, ctx)
     link = clean_link(args[1])
 
     if not link.startswith(("http://", "https://")):
@@ -18,17 +21,7 @@ async def handle_song(ctx):
 
     hostname = urlparse(link).hostname
 
-    if not hostname or not (
-        hostname == "youtu.be"
-        or hostname == "youtube.com"
-        or hostname.endswith(".youtube.com")
-    ):
-        print("Link is not valid!")
-        await ctx.send("Link is not valid!")
-        return False
-
     try:
-        print("starting dlp")
         with yt_dlp.YoutubeDL({
             "quiet": True,
             "no_warnings": True
@@ -50,18 +43,32 @@ async def handle_song(ctx):
         return song_info
 
     except Exception as e:
-        print(f"Exception: {e}")
-        await ctx.send(f"Something went wrong. {e}")
         return False
 
-def clean_link(link):
+def validate_link(link, args, ctx):
+    print("_______")
     parsed = urlparse(link)
+    print("_______")
+
+    if len(args) < 2:
+        print(f"----------------------------------------------------------------\n{link}\nInvalid link")
+        raise ValueError
+
+    if not parsed.hostname in supported_hostnames or not parsed.hostname:
+        print(f"----------------------------------------------------------------\n{link}\nInvalid link")
+        raise ValueError
+
+
+
+def clean_link(link: str):
+    parsed = urlparse(link)
+
     if parsed.hostname == "youtu.be":
         return link.split("?")[0]
     if "youtube.com" in parsed.hostname:
         video_id = parse_qs(parsed.query).get("v")
-
         if video_id:
+            print(f"https://www.youtube.com/watch?v={video_id[0]}")
             return f"https://www.youtube.com/watch?v={video_id[0]}"
     return link
 

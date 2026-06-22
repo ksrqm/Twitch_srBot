@@ -26,7 +26,13 @@ async def event_ready():
 ############################################################################
 @bot.command()
 async def song(ctx):
-    request = await link_check.handle_song(ctx)
+    try:
+        request = await link_check.handle_song(ctx)
+    except ValueError:
+        await ctx.send("Invalid link")
+        return
+
+
     if request:
         added = que.add_to_queue(request, ctx)
         await ctx.send(
