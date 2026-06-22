@@ -1,45 +1,69 @@
 import yt_dlp
+from urllib.parse import urlparse, parse_qs
 
 async def handle_song(ctx):
-    args = ctx.message.content.split()
+    args = ctx.message.content.split(" ")
+
     if len(args) < 2:
-        await ctx.send("You need to provide YouTube ID")
+        await ctx.send("You need to provide YouTube link")
         return False
-    song_id = args[1]
 
-    if len(song_id) == 11:
-        link = "https://www.youtube.com/watch?v=" + song_id
-        print("----------------------------------------------------------------")
-        print(f"CHECKING LINK: {link}")
+    link = clean_link(args[1])
 
-        try:
-            with yt_dlp.YoutubeDL({"quiet": True, "no_warnings": True}) as ydl:
-                info = ydl.extract_info(link, download=False)
+    if not link.startswith(("http://", "https://")):
+        link = "https://" + link
 
-            song_info={
-                "title": info.get("title"),
-                "duration": info.get("duration"),
-                "link": link,
-                "user": ctx.author.display_name
-            }
+    print("----------------------------------------------------------------")
+    print(f"CHECKING LINK: {link}")
 
-            message = filter_song(song_info)
+    hostname = urlparse(link).hostname
 
-            if message:
-                await ctx.send(message)
-                return False
-            return song_info
+    if not hostname or not (
+        hostname == "youtu.be"
+        or hostname == "youtube.com"
+        or hostname.endswith(".youtube.com")
+    ):
+        print("Link is not valid!")
+        await ctx.send("Link is not valid!")
+        return False
 
-        except Exception as e:
-            print(f"Exception: {e}")
-            await ctx.send(f"Something went wrong. {e}")
+    try:
+        print("starting dlp")
+        with yt_dlp.YoutubeDL({
+            "quiet": True,
+            "no_warnings": True
+        }) as ydl:
+            info = ydl.extract_info(link, download=False)
+
+        song_info = {
+            "title": info.get("title"),
+            "duration": info.get("duration"),
+            "link": link,
+            "user": ctx.author.display_name
+        }
+        message = filter_song(song_info)
+
+        if message:
+            await ctx.send(message)
             return False
-    else:
-        print("ID is not valid!")
-        await ctx.send(f"ID is not valid!")
+
+        return song_info
+
+    except Exception as e:
+        print(f"Exception: {e}")
+        await ctx.send(f"Something went wrong. {e}")
         return False
 
+def clean_link(link):
+    parsed = urlparse(link)
+    if parsed.hostname == "youtu.be":
+        return link.split("?")[0]
+    if "youtube.com" in parsed.hostname:
+        video_id = parse_qs(parsed.query).get("v")
 
+        if video_id:
+            return f"https://www.youtube.com/watch?v={video_id[0]}"
+    return link
 
 def filter_song(song_info):
     words = ["nigga", "nigger", "niggas", "niggers"]

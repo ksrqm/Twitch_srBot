@@ -40,7 +40,7 @@ bot checks only for "TRUE" value so if you put "Mona Lisa" for example it'll sti
 * `USERS_WITH_PERMS=...`
 
 ## Commands
-* `!song <youtube_id>` - add song request
+* `!song <youtube link>` - add song request
 * `!skip` - skip current song
 * `!volume <0-100>` - set volume
 * `!queue` - show queue
