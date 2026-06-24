@@ -1,6 +1,9 @@
 import os
+
 from dotenv import load_dotenv
-from SR import playlist_randomizer
+
+from bot_files.SR import playlist_randomizer
+from bot_files.logger import current_time
 
 load_dotenv()
 song_queue = []
@@ -16,7 +19,8 @@ def add_to_queue(song, ctx):
         if user_songs >= songs_per_user:
             return False
     song_queue.append(song)
-    print(
+
+    current_time.log_time(
         f"Added: {song['title']}, duration: {song['duration']}, "
         f"user: {song['user']}, link: {song['link']}"
     )

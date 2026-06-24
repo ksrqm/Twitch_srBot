@@ -1,5 +1,9 @@
 import yt_dlp
+
 from urllib.parse import urlparse, parse_qs
+
+from bot_files.logger import log_returns
+
 
 supported_hostnames = {
         "www.youtube.com",
@@ -10,16 +14,16 @@ supported_hostnames = {
 
 async def handle_song(ctx):
     args = ctx.message.content.split(" ")
-    #validate_link(args[1], args, ctx)
+    validate_link(args)
     link = clean_link(args[1])
 
     if not link.startswith(("http://", "https://")):
         link = "https://" + link
 
-    print("----------------------------------------------------------------")
-    print(f"CHECKING LINK: {link}")
-
-    hostname = urlparse(link).hostname
+    print("________________________________________________________________________________")
+    log_returns.log_answer(
+        f"CHECKING LINK: {link}"
+    )
 
     try:
         with yt_dlp.YoutubeDL({
@@ -34,10 +38,11 @@ async def handle_song(ctx):
             "link": link,
             "user": ctx.author.display_name
         }
-        message = filter_song(song_info)
+        answer = filter_song(song_info)
 
-        if message:
-            await ctx.send(message)
+        if answer:
+            await ctx.send(answer)
+            log_returns.log_answer(answer)
             return False
 
         return song_info
@@ -45,17 +50,15 @@ async def handle_song(ctx):
     except Exception as e:
         return False
 
-def validate_link(link, args, ctx):
-    print("_______")
-    parsed = urlparse(link)
-    print("_______")
-
+def validate_link(args):
     if len(args) < 2:
-        print(f"----------------------------------------------------------------\n{link}\nInvalid link")
+        print(f"________________________________________________________________________________\nInvalid link")
         raise ValueError
 
+    parsed = urlparse(args[1])
+
     if not parsed.hostname in supported_hostnames or not parsed.hostname:
-        print(f"----------------------------------------------------------------\n{link}\nInvalid link")
+        print(f"________________________________________________________________________________\nInvalid link")
         raise ValueError
 
 
@@ -68,14 +71,13 @@ def clean_link(link: str):
     if "youtube.com" in parsed.hostname:
         video_id = parse_qs(parsed.query).get("v")
         if video_id:
-            print(f"https://www.youtube.com/watch?v={video_id[0]}")
             return f"https://www.youtube.com/watch?v={video_id[0]}"
     return link
 
 def filter_song(song_info):
     words = ["nigga", "nigger", "niggas", "niggers"]
 
-    if song_info["duration"] and song_info["duration"] > 480:
+    if song_info["duration"] and song_info["duration"] > 480 or song_info["duration"] is None:
         print("Song too long")
         return f"Song longer than 8 minutes | {song_info['title']}"
 
